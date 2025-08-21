@@ -1,0 +1,26 @@
+name: Meal Survey Bot
+
+on:
+  schedule:
+    - cron: "0 22 * * 0-4"   # KST 07:00 (UTC 22:00, Sun~Thu → KST Mon~Fri)
+  workflow_dispatch:          # 수동 실행 버튼
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run send.py
+        run: python send.py
+        env:
+          DOORAY_INCOMING_URL: ${{ secrets.DOORAY_INCOMING_URL }}
