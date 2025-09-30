@@ -1,6 +1,7 @@
 import os
 import requests
 from datetime import datetime, timedelta, timezone
+import holidays
 
 WEBHOOK_URL = os.getenv("DOORAY_INCOMING_URL")
 
@@ -11,11 +12,15 @@ now = datetime.now(KST)
 # 요일 한글 매핑
 weekday_map = ["월", "화", "수", "목", "금", "토", "일"]
 
+# 한국 공휴일 객체 생성
+kr_holidays = holidays.KR()
+
 # 기본: 다음 날
 target_date = now + timedelta(days=1)
-# 금요일(weekday=4)에는 다음 주 월요일(+3일)
-if now.weekday() == 4:
-    target_date = now + timedelta(days=3)
+
+# 공휴일/주말 건너뛰기
+while target_date.weekday() >= 5 or target_date in kr_holidays:
+    target_date += timedelta(days=1)
 
 date_str = target_date.strftime("%m월%d일")
 weekday_str = weekday_map[target_date.weekday()]
